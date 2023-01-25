@@ -1,11 +1,11 @@
 version: "3.8"
 
 services:
-  web:
-    build: ./services/web
+  web-api:
+    build: ./
     command: python manage.py run -h 0.0.0.0
     volumes:
-      - ./services/web/:/usr/src/app/
+      - ./:/usr/src/app/
     ports:
       - 5000:5000
     env_file:
@@ -15,9 +15,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=hello_flask
-      - POSTGRES_PASSWORD=hello_flask
-      - POSTGRES_DB=hello_flask_dev
+      - POSTGRES_USER=FLASK_TODOS
+      - POSTGRES_PASSWORD=FLASK123_023
+      - POSTGRES_DB=FLASK_TODOS_DEV
 
 volumes:
   postgres_data:
