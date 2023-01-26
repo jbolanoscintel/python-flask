@@ -6,7 +6,8 @@ class Todo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(128), unique=True, nullable=False)
-    author = db.Column(db.Integer, db.ForeignKey("User.id"))
+    author = db.Column(db.Integer, db.ForeignKey(
+        "User.id", ondelete='CASCADE'))
     active = db.Column(db.Boolean(), default=True, nullable=False)
     complete_date = db.Column(db.Boolean(), default=True, nullable=False)
     estimated_complete_date = db.Column(db.DateTime(timezone=True))

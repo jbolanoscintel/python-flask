@@ -1,8 +1,9 @@
 from flask import request, jsonify, Response
+from sqlalchemy import or_
 from ..models import User
 from ..models.db import db
 from flask_restx import Resource
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 import datetime
 
 
@@ -15,6 +16,7 @@ class SignUpApi(Resource):
         db.session.commit()
         return {'id': str(id)}, 200
 
+    @jwt_required()
     def get(self):
         users = User.query.all()
         result = []
@@ -23,10 +25,11 @@ class SignUpApi(Resource):
         return jsonify(result)
 
 
-class SignInApi(Resource):
+class LoginApi(Resource):
     def post(self):
         body = request.get_json()
-        user = User.query(body.get('email'))
+        user = db.session.query(User).filter_by(
+            email=body.get("email")).first()
         if user:
             authorized = user.check_password(body.get('password'))
             if not authorized:

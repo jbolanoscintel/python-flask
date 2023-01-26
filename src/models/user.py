@@ -1,5 +1,6 @@
 import datetime
 from .db import db
+from .todo import Todo
 from flask_bcrypt import generate_password_hash, check_password_hash
 
 
@@ -14,8 +15,12 @@ class User(db.Model):
     update_at = db.Column(db.DateTime(timezone=True),
                           default=db.func.now())
     created_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
-    todos = db.relationship("Todo")
-    profile = db.relationship("Profile")
+    todos = db.relationship(
+        "Todo", backref=db.backref("User")
+    )
+    profile = db.relationship(
+        "Profile", backref=db.backref("User")
+    )
 
     def __init__(self, email, password):
         self.email = email
