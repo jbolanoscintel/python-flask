@@ -16,10 +16,10 @@ class User(db.Model):
                           default=db.func.now())
     created_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     todos = db.relationship(
-        "Todo", backref=db.backref("User")
+        "Todo",  back_populates="project", cascade="delete, merge, save-update"
     )
     profile = db.relationship(
-        "Profile", backref=db.backref("User")
+        "Profile",  back_populates="project", cascade="delete, merge, save-update"
     )
 
     def __init__(self, email, password):

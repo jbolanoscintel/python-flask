@@ -2,9 +2,11 @@ from flask import Flask, jsonify
 from flask_restx import Api
 from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
+from flask_mail import Mail
 from flask_jwt_extended import JWTManager
 from .routes import set_up_routes
 from .models.db import initialize_db, db
+from .resources.errors import errors
 import os
 
 # Set folder configurations
@@ -15,7 +17,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 
-api = Api(app)
+api = Api(app, errors=errors)
 
 bcrypt = Bcrypt(app)
 
@@ -30,25 +32,7 @@ app.config.from_object('src.config.DevelopmentConfig')
 
 jwt = JWTManager(app)
 
-
-@jwt.expired_token_loader
-def my_expired_token_callback(jwt_header, jwt_payload):
-    return jsonify(code="dave", err="I can't let you do that"), 401
-
-
-@jwt.invalid_token_loader
-def token_invalid_callback(jwt_header, jwt_payload):
-    return jsonify(code="emergency", err="I can't let you do that, not authorized"), 401
-
-
-@jwt.token_verification_failed_loader
-def token_invalid_callback_2(jwt_header, jwt_payload):
-    return jsonify(code="emergency", err="I can't let you do that, not authorized"), 401
-
-
-@jwt.user_lookup_error_loader
-def token_invalid_callback_2(jwt_header, jwt_payload):
-    return jsonify(code="emergency", err="I can't let you do that, not authorized"), 401
+mail = Mail(app)
 
 
 initialize_db(app)

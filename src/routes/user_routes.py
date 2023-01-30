@@ -1,41 +1,38 @@
 from flask import request, jsonify, Response
-from sqlalchemy import or_
-from ..models import User
-from ..models.db import db
 from flask_restx import Resource
-from flask_jwt_extended import create_access_token, jwt_required
-import datetime
+from flask_jwt_extended import jwt_required
+from ..services.user_service import create_user, get_users, login, update_user, delete_user, activate_user
 
 
 class SignUpApi(Resource):
     def post(self):
         body = request.get_json()
-        user = User(**body)
-        user.hash_password()
-        db.session.add(user)
-        db.session.commit()
+        create_user(body)
         return {'id': str(id)}, 200
 
     @jwt_required()
     def get(self):
-        users = User.query.all()
-        result = []
-        for u in users:
-            result.append(u.serialize())
-        return jsonify(result)
+        users = get_users()
+        return jsonify(users)
 
 
 class LoginApi(Resource):
     def post(self):
         body = request.get_json()
-        user = db.session.query(User).filter_by(
-            email=body.get("email")).first()
-        if user:
-            authorized = user.check_password(body.get('password'))
-            if not authorized:
-                return {'error': 'Incorrect Email or Password'}, 401
-            expires = datetime.timedelta(days=7)
-            access_token = create_access_token(
-                identity=str(user.id), expires_delta=expires)
-            return {'token': access_token}, 200
-        return {'error': 'Incorrect Email or Password'}, 401
+        result = login(body)
+        return result
+
+
+class UserApi(Resource):
+    def post(self, id):
+        result = activate_user(id)
+        return result
+
+    def put(self, id):
+        body = request.get_json()
+        result = update_user(id, body)
+        return result
+
+    def delete(self, id):
+        result = delete_user(id)
+        return result
