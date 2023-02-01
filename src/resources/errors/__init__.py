@@ -2,6 +2,14 @@ class InternalServerError(Exception):
     pass
 
 
+class EmailDoesnotExistsError(Exception):
+    pass
+
+
+class BadTokenError(Exception):
+    pass
+
+
 class SchemaValidationError(Exception):
     pass
 
@@ -62,5 +70,13 @@ errors = {
     "UnauthorizedError": {
         "message": "Invalid username or password",
         "status": 401
+    },
+    "EmailDoesnotExistsError": {
+        "message": "Couldn't find the user with given email address",
+        "status": 400
+    },
+    "BadTokenError": {
+        "message": "Invalid token",
+        "status": 403
     }
 }
